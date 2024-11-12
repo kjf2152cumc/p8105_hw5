@@ -1,0 +1,11 @@
+---
+title: "Homework 5 - P8105"
+author: "Kaleb J. Frierson"
+date: "2024-11-12"
+output: 
+  github_document: 
+    toc: TRUE
+--- 
+
+# Introduction
+
