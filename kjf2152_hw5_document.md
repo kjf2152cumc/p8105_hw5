@@ -20,9 +20,8 @@ Kaleb J. Frierson
 
 # Introduction
 
-This homework is associated with the Iteration Unit. This unit includes
-the components Writing Functions, Iteration & List columns, and
-Simulation.
+This is the Iteration Unit homework. This unit includes the components
+Writing Functions, Iteration & List columns, and Simulation.
 
 ## Library Calling
 
@@ -37,31 +36,31 @@ library(broom)
 
 # Problem 1
 
+In this problem I will use a `function` to obtain and plot summary
+statistics from a `sample`.
+
 ## Random Function
 
-Suppose you put n people in a room, and want to know the probability
-that at least two people share a birthday. For simplicity, we’ll assume
-there are no leap years (i.e. there are only 365 days) and that
-birthdays are uniformly distributed over the year (which is actually not
-the case).
-
-Write a function that, for a fixed group size, randomly draws
-“birthdays” for each person; checks whether there are duplicate
-birthdays in the group; and returns TRUE or FALSE based on the result.
+Before building the function I practice using `sample` to build a sample
+with 100 numbers 1 to 365 to represent days of an entire calendar year:
 
 ``` r
-n = 100
+n=100
 bday_sample = sample(1:365, n, replace = TRUE)
 
 bday_sample
 ```
 
-    ##   [1] 251 107 206 363 126 260  81 333 247 197  64  78 187 176 352 210 309  89
-    ##  [19]  26  62 193 115 353   3 330 287 119 195 194 118 203   3  72 228 272 125
-    ##  [37] 296  21 102 321 353 357 337 241 306 351 140 260  32 342 156 216 302 274
-    ##  [55] 178 334  49 234  84 301 264 197  31 347  70 100 114 323  16 229 157 105
-    ##  [73] 279 292 236  78  16 157 260 330  65 164 268 145 236 155 207 346   3 124
-    ##  [91]  96 293  10 131  50  75 272 301  85  97
+    ##   [1]  16 348  76 124 287 189 286 265 203 143  78 108 254 258 289 260 302 135
+    ##  [19] 317 189 178 281  17  67 188 198  87 316 337 129 344 270   7  86 151 240
+    ##  [37] 112 136 171  39 203 242 107 229  95 106 186  63 275   3  10  34 157 259
+    ##  [55] 273 307 135 302 111 112 273 191 176   7 173 222 206 148  33 309  72 100
+    ##  [73] 166 157  17  24 307 122 329 195 130  78  44  30  91 206 267 284 182 114
+    ##  [91]  31 127 195 301 348 160 295  96 251 123
+
+Here I write a `function` that, for n = 100, randomly draws “birthdays”
+for each person; checks whether there are duplicate birthdays in the
+group; and returns `TRUE` or `FALSE` based on the result:
 
 ``` r
 bday_repeats = 
@@ -91,15 +90,15 @@ bday_repeats(1)
 bday_repeats(32)  
 ```
 
-    ## [1] FALSE
+    ## [1] TRUE
 
 ## Using Function & Plotting Results
 
-Next, run this function 10000 times for each group size between 2 and
-50. For each group size, compute the probability that at least two
+Now I run this `function` 10000 times for each group size between 2 and
+50. For each group size, I compute the probability that at least two
 people in the group will share a birthday by averaging across the 10000
-simulation runs. Make a plot showing the probability as a function of
-group size, and comment on your results.
+simulation runs. Then I use ggplot to generate a `geom_line` that shows
+the probability as a function of group size.
 
 ``` r
 group_n = 2:50
@@ -123,35 +122,31 @@ ggplot(bday_sim_results, aes(x = group_size, y = probability)) +
 ```
 
 ![](kjf2152_hw5_document_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
+
 **Comments on Graph:** As group size increases from n = 2 to n = 50, the
 probability that someone in the group shares a birthday with someone
 else increases.
 
 # Problem 2
 
-When designing an experiment or analysis, a common question is whether
-it is likely that a true effect will be detected – put differently,
-whether a false null hypothesis will be rejected. The probability that a
-false null hypothesis is rejected is referred to as power, and it
-depends on several factors, including: the sample size; the effect size;
-and the error variance. In this problem, you will conduct a simulation
-to explore power in a one-sample t-test.
+In this problem, I will conduct a simulation to explore power in a
+one-sample t-test.
 
 ## Set Elements & Generate Datasets
 
-Generate 5000 datasets from the model
+Below I generate 5000 datasets from the model:
 
 𝑥∼𝑁𝑜𝑟𝑚𝑎𝑙\[𝜇,𝜎\]
 
-First set the following design elements:
+In the `function` I set the following design elements:
 
 Fix 𝑛=30 Fix 𝜎=5 Set 𝜇=0
 
-For each dataset, save 𝜇̂ and the p-value arising from a test of 𝐻:𝜇=0
+For each dataset, I save 𝜇̂ and the p-value arising from a test of 𝐻:𝜇=0
 using 𝛼=0.05
 
-Hint: to obtain the estimate and p-value, use broom::tidy to clean the
-output of t.test.
+To obtain the estimate and p-value, I use `broom::tidy` to clean the
+output of `t.test`:
 
 ``` r
 t_simulation = 
@@ -180,20 +175,18 @@ head(test_result)
 ```
 
     ## # A tibble: 6 × 3
-    ##   mu_true  mu_hat p_value
-    ##     <dbl>   <dbl>   <dbl>
-    ## 1       0  0.248    0.785
-    ## 2       0 -0.299    0.759
-    ## 3       0 -0.378    0.658
-    ## 4       0 -0.919    0.256
-    ## 5       0  0.620    0.389
-    ## 6       0 -0.0891   0.908
+    ##   mu_true mu_hat p_value
+    ##     <dbl>  <dbl>   <dbl>
+    ## 1       0  1.57   0.0621
+    ## 2       0 -0.351  0.692 
+    ## 3       0 -0.727  0.434 
+    ## 4       0 -0.776  0.505 
+    ## 5       0 -0.365  0.684 
+    ## 6       0 -0.362  0.716
 
 ## Repetitive Tasks & Plotting
 
-Repeat the above for 𝜇={1,2,3,4,5,6}, and make a plot showing the
-proportion of times the null was rejected (the power of the test) on the
-y axis and the true value of 𝜇 on the x axis.
+Here I repeat the above for 𝜇={1,2,3,4,5,6}:
 
 ``` r
 mu_values = 1:6
@@ -206,14 +199,17 @@ head(repeated)
 ```
 
     ## # A tibble: 6 × 3
-    ##   mu_true mu_hat p_value
-    ##     <int>  <dbl>   <dbl>
-    ## 1       1 -0.429  0.662 
-    ## 2       1  0.390  0.636 
-    ## 3       1  1.88   0.0522
-    ## 4       1  0.663  0.393 
-    ## 5       1 -0.303  0.749 
-    ## 6       1  0.432  0.649
+    ##   mu_true  mu_hat  p_value
+    ##     <int>   <dbl>    <dbl>
+    ## 1       1  1.78   0.0943  
+    ## 2       1  0.0396 0.962   
+    ## 3       1  1.11   0.264   
+    ## 4       1 -1.26   0.225   
+    ## 5       1  2.24   0.0213  
+    ## 6       1  3.50   0.000606
+
+Here I generate a plot using `gglpot` showing power on the y axis and
+the true value of 𝜇 on the x axis:
 
 ``` r
 power_results = 
@@ -237,13 +233,14 @@ power_plot
 ```
 
 ![](kjf2152_hw5_document_files/figure-gfm/power%20plot-1.png)<!-- -->
+
 **Describe the association between effect size and power**: Power
 increases as the true mean, a proxy for effect size, increases.
 
-Make a plot showing the average estimate of 𝜇̂ on the y axis and the true
-value of 𝜇on the x axis. Make a second plot (or overlay on the first)
-the average estimate of 𝜇̂ only in samples for which the null was
-rejected on the y axis and the true value of 𝜇 on the x axis.
+Here I make a plot showing the average estimate of 𝜇̂ on the y axis and
+the true value of 𝜇on the x axis. I then overlay the average estimate of
+𝜇̂ only in samples for which the null was rejected on the y axis and the
+true value of 𝜇 on the x axis:
 
 ``` r
 average_results = 
@@ -282,41 +279,197 @@ plot
 ```
 
 ![](kjf2152_hw5_document_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+
 **Is the sample average of 𝜇̂ across tests for which the null is rejected
 approximately equal to the true value of 𝜇? Why or why not?**
 
-# Problem 3
+Not when true value of mu is lower than about 3. This makes sense
+because we showed earlier that power (correctly rejecting a null
+hypothesis) increases with effect size.
 
-The Washington Post has gathered data on homicides in 50 large U.S.
-cities and made the data available through a GitHub repository here. You
-can read their accompanying article here.
+# Problem 3
 
 ## Describe Data
 
-Describe the raw data. Create a city_state variable (e.g. “Baltimore,
-MD”) and then summarize within cities to obtain the total number of
-homicides and the number of unsolved homicides (those for which the
-disposition is “Closed without arrest” or “Open/No arrest”).
+Here I use `mutate` to create a city_state variable. Then I `summarize`
+within cities to obtain the total number of homicides and the number of
+unsolved homicides (those for which the disposition is “Closed without
+arrest” or “Open/No arrest”):
+
+``` r
+murder = 
+  read.csv("local data/homicide-data.csv", na = c("NA", "", ".")) |> 
+  mutate(
+    city_state = str_c(city, ", ", state),
+    unsolved = disposition %in% c("Closed without arrest", "Open/No arrest")
+  ) |> janitor::clean_names()
+  
+homicide_summary = 
+  murder |>   
+  group_by(city_state) |> 
+  summarize(
+    total_homicides = n(),
+    unsolved_homicides = sum(unsolved),
+    .groups = "drop"
+  )
+
+knitr::kable(homicide_summary)
+```
+
+| city_state         | total_homicides | unsolved_homicides |
+|:-------------------|----------------:|-------------------:|
+| Albuquerque, NM    |             378 |                146 |
+| Atlanta, GA        |             973 |                373 |
+| Baltimore, MD      |            2827 |               1825 |
+| Baton Rouge, LA    |             424 |                196 |
+| Birmingham, AL     |             800 |                347 |
+| Boston, MA         |             614 |                310 |
+| Buffalo, NY        |             521 |                319 |
+| Charlotte, NC      |             687 |                206 |
+| Chicago, IL        |            5535 |               4073 |
+| Cincinnati, OH     |             694 |                309 |
+| Columbus, OH       |            1084 |                575 |
+| Dallas, TX         |            1567 |                754 |
+| Denver, CO         |             312 |                169 |
+| Detroit, MI        |            2519 |               1482 |
+| Durham, NC         |             276 |                101 |
+| Fort Worth, TX     |             549 |                255 |
+| Fresno, CA         |             487 |                169 |
+| Houston, TX        |            2942 |               1493 |
+| Indianapolis, IN   |            1322 |                594 |
+| Jacksonville, FL   |            1168 |                597 |
+| Kansas City, MO    |            1190 |                486 |
+| Las Vegas, NV      |            1381 |                572 |
+| Long Beach, CA     |             378 |                156 |
+| Los Angeles, CA    |            2257 |               1106 |
+| Louisville, KY     |             576 |                261 |
+| Memphis, TN        |            1514 |                483 |
+| Miami, FL          |             744 |                450 |
+| Milwaukee, wI      |            1115 |                403 |
+| Minneapolis, MN    |             366 |                187 |
+| Nashville, TN      |             767 |                278 |
+| New Orleans, LA    |            1434 |                930 |
+| New York, NY       |             627 |                243 |
+| Oakland, CA        |             947 |                508 |
+| Oklahoma City, OK  |             672 |                326 |
+| Omaha, NE          |             409 |                169 |
+| Philadelphia, PA   |            3037 |               1360 |
+| Phoenix, AZ        |             914 |                504 |
+| Pittsburgh, PA     |             631 |                337 |
+| Richmond, VA       |             429 |                113 |
+| Sacramento, CA     |             376 |                139 |
+| San Antonio, TX    |             833 |                357 |
+| San Bernardino, CA |             275 |                170 |
+| San Diego, CA      |             461 |                175 |
+| San Francisco, CA  |             663 |                336 |
+| Savannah, GA       |             246 |                115 |
+| St. Louis, MO      |            1677 |                905 |
+| Stockton, CA       |             444 |                266 |
+| Tampa, FL          |             208 |                 95 |
+| Tulsa, AL          |               1 |                  0 |
+| Tulsa, OK          |             583 |                193 |
+| Washington, DC     |            1345 |                589 |
+
+**Describe the raw data:** There are `r nrow(murder)` rows and 14
+columns in the `murder` dataset. Chicago, IL has the most homicides in
+the dataset: 5535 with a shocking 4073 of them unsolved.
 
 ## Function: prop.test
 
-For the city of Baltimore, MD, use the prop.test function to estimate
-the proportion of homicides that are unsolved; save the output of
-prop.test as an R object, apply the broom::tidy to this object and pull
-the estimated proportion and confidence intervals from the resulting
-tidy dataframe.
+For the city of Baltimore, MD, I use the `prop.test` function to
+estimate the proportion of homicides that are unsolved; I save the
+output of `prop.test` as an R object called `baltimore_test`, and then
+apply `broom::tidy` to that object and pull the estimated proportion and
+confidence intervals from the resulting tidy dataframe.
+
+``` r
+baltimore_data = 
+  homicide_summary |> 
+  filter(city_state == "Baltimore, MD")
+
+baltimore_test = prop.test(
+  x = baltimore_data$unsolved_homicides,
+  n = baltimore_data$total_homicides
+)
+
+baltimore_results = 
+  tidy(baltimore_test) |> 
+  select(estimate, conf.low, conf.high)
+
+baltimore_results
+```
+
+    ## # A tibble: 1 × 3
+    ##   estimate conf.low conf.high
+    ##      <dbl>    <dbl>     <dbl>
+    ## 1    0.646    0.628     0.663
 
 ## Run Function on Cities
 
-Now run prop.test for each of the cities in your dataset, and extract
+Here I run `prop.test` for each of the cities in the dataset and extract
 both the proportion of unsolved homicides and the confidence interval
-for each. Do this within a “tidy” pipeline, making use of purrr::map,
-purrr::map2, list columns and unnest as necessary to create a tidy
-dataframe with estimated proportions and CIs for each city.
+for each. I do this within a “tidy” pipeline, making use of
+`purrr::map2`. Probably above the needs of this class, I set criteria
+such that `binom.test` is run on those with less than 5 values as to not
+violate assumptions of `prop.test`. Estimated proportions and CIs are
+provided for each city:
+
+``` r
+city_results = 
+  homicide_summary |> 
+  mutate(
+    prop_test = map2(
+      unsolved_homicides, 
+      total_homicides, 
+      ~ if (.x < 5 | (.y - .x) < 5) {
+          tidy(binom.test(x = .x, n = .y))
+        } else {
+          tidy(prop.test(x = .x, n = .y))
+        }
+    )
+  ) |> 
+  unnest(prop_test) |> 
+  select(city_state, estimate, conf.low, conf.high)
+
+head(city_results)
+```
+
+    ## # A tibble: 6 × 4
+    ##   city_state      estimate conf.low conf.high
+    ##   <chr>              <dbl>    <dbl>     <dbl>
+    ## 1 Albuquerque, NM    0.386    0.337     0.438
+    ## 2 Atlanta, GA        0.383    0.353     0.415
+    ## 3 Baltimore, MD      0.646    0.628     0.663
+    ## 4 Baton Rouge, LA    0.462    0.414     0.511
+    ## 5 Birmingham, AL     0.434    0.399     0.469
+    ## 6 Boston, MA         0.505    0.465     0.545
 
 ## Plot
 
-Create a plot that shows the estimates and CIs for each city – check out
-geom_errorbar for a way to add error bars based on the upper and lower
-limits. Organize cities according to the proportion of unsolved
-homicides.
+Here I create a plot showing estimates and CIs for each city.
+`geom_errorbar` allowed me to add error bars based on the upper and
+lower limits. Cities were organized according to the proportion of
+unsolved homicides using `arrange`. For best viewership, see the knitted
+document.
+
+``` r
+city_results = 
+  city_results |> 
+  arrange(desc(estimate)) |> 
+  mutate(city_state = factor(city_state, levels = city_state))
+
+city_results |> 
+ggplot(aes(x = city_state, y = estimate)) +
+  geom_point(color = "blue") +
+  geom_errorbar(
+    aes(ymin = conf.low, ymax = conf.high), width = 0.2) +
+  coord_flip() +
+  labs(
+    title = "Proportion of Unsolved Homicides by City",
+    x = "City",
+    y = "Proportion of Unsolved Homicides"
+  ) +
+  theme_minimal()
+```
+
+![](kjf2152_hw5_document_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
