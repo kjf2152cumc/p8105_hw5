@@ -9,7 +9,7 @@ output:
 
 # Introduction
 
-This homework is associated with the Iteration Unit. This unit includes the components Writing Functions, Iteration & List columns, and Simulation. 
+This homework is associated with the Iteration Unit. This unit includes the components Writing Functions, Iteration & List columns, and Simulation.
 
 ## Library Calling
 
@@ -19,6 +19,7 @@ Here are all libraries used throughout this RMD:
 library(tidyverse)
 library(readxl)
 library(rvest)
+library(broom)
 
 ```
 
@@ -88,7 +89,11 @@ ggplot(bday_sim_results, aes(x = group_size, y = probability)) +
 
 When designing an experiment or analysis, a common question is whether it is likely that a true effect will be detected – put differently, whether a false null hypothesis will be rejected. The probability that a false null hypothesis is rejected is referred to as power, and it depends on several factors, including: the sample size; the effect size; and the error variance. In this problem, you will conduct a simulation to explore power in a one-sample t-test.
 
-## Set Elements
+## Set Elements & Generate Datasets
+
+Generate 5000 datasets from the model
+
+𝑥∼𝑁𝑜𝑟𝑚𝑎𝑙[𝜇,𝜎]
 
 First set the following design elements:
 
@@ -96,44 +101,111 @@ Fix 𝑛=30
 Fix 𝜎=5
 Set 𝜇=0
 
-```{r}
-
-```
-
-## Generate Datasets
-
-Generate 5000 datasets from the model
-
-𝑥∼𝑁𝑜𝑟𝑚𝑎𝑙[𝜇,𝜎]
-
-For each dataset, save 𝜇̂ 
- and the p-value arising from a test of 𝐻:𝜇=0
- using 𝛼=0.05
+For each dataset, save 𝜇̂ and the p-value arising from a test of 𝐻:𝜇=0 using 𝛼=0.05
 
 Hint: to obtain the estimate and p-value, use broom::tidy to clean the output of t.test.
 
 ```{r}
 
+t_simulation = 
+  function(mu = 0, n = 30, sigma = 5, simulations) {
+  if (!is.numeric(n) || n <= 0) stop("Sample size 'n' must be a positive number.")
+  if (!is.numeric(sigma) || sigma <= 0) stop("Standard deviation 'sigma' must be a positive number.")
+  if (!is.numeric(simulations) || simulations <= 0) stop("Number of simulations must be a positive number.")
+  
+  map_dfr(1:simulations, ~ { 
+    x = rnorm(n, mean = mu, sd = sigma)
+    test_result = t.test(x, mu = 0)
+    tidy_res = tidy(test_result)
+    
+    tibble( 
+      mu_true = mu, 
+      mu_hat = tidy_res$estimate, 
+      p_value = tidy_res$p.value
+    )
+  })
+}
+
+test_result = 
+  t_simulation(mu = 0, n = 30, sigma = 5, simulations = 5000)
+
+head(test_result)
+
 ```
 
 ## Repetitive Tasks & Plotting
 
-Repeat the above for 𝜇={1,2,3,4,5,6}, and complete the following:
+Repeat the above for 𝜇={1,2,3,4,5,6}, and make a plot showing the proportion of times the null was rejected (the power of the test) on the y axis and the true value of 𝜇 on the x axis. 
 
-Make a plot showing the proportion of times the null was rejected (the power of the test) on the y axis and the true value of 𝜇
- on the x axis. Describe the association between effect size and power.
+```{r using function}
+
+mu_values = 1:6
+
+repeated = 
+  map_dfr(mu_values, ~ t_simulation(.x, n=30, sigma=5, simulations=5000)) |> 
+  unnest(cols = p_value)
+
+head(repeated)
+```
+
+
+```{r power plot}
+
+power_results = 
+  repeated |> 
+  group_by(mu_true) |> 
+  summarize(power = mean(p_value < 0.05), .groups = "drop") 
+
+power_plot = 
+power_results |> 
+ggplot(aes(x = mu_true, y = power)) +
+  geom_point(color = "goldenrod") +
+  geom_line(color = "royalblue") +
+  labs(
+    title = "Power of the Test vs. True Value of µ",
+    x = "True Value of µ",
+    y = "Power"
+  ) +
+  theme_minimal()
+
+power_plot
+
+```
+**Describe the association between effect size and power**: Power increases as the true mean, a proxy for effect size, increases. 
+
+Make a plot showing the average estimate of 𝜇̂ on the y axis and the true value of 𝜇on the x axis. Make a second plot (or overlay on the first) the average estimate of 𝜇̂ only in samples for which the null was rejected on the y axis and the true value of 𝜇 on the x axis. 
 
 ```{r}
 
+average_results = 
+  repeated |> 
+  group_by(mu_true) |> 
+  summarize(
+    avg_mu_hat = mean(mu_hat),            
+    avg_mu_hat_rejected = mean(mu_hat[p_value < 0.05])
+  )
+
+plot = 
+  average_results |> 
+  ggplot(aes(x = mu_true)) +
+  geom_line(
+    aes(y = avg_mu_hat, color = "Overall Avg µ̂"), 
+            linetype = "dashed", linewidth = 1) +
+  geom_line(
+    aes(y = avg_mu_hat_rejected, color ="Avg µ̂ (Null   Rejected)"), size = 1) +
+  labs(
+    title = "Average Estimate of µ̂ vs True Value of µ",
+    x = "True Value of µ",
+    y = "Average Estimate of µ̂", 
+    color = "Legend"
+  ) +
+  theme_minimal() 
+
+plot
+
 ```
+**Is the sample average of 𝜇̂ across tests for which the null is rejected approximately equal to the true value of 𝜇? Why or why not?**
 
-Make a plot showing the average estimate of 𝜇̂ 
- on the y axis and the true value of 𝜇
- on the x axis. Make a second plot (or overlay on the first) the average estimate of 𝜇̂ only in samples for which the null was rejected on the y axis and the true value of 𝜇 on the x axis. Is the sample average of 𝜇̂ across tests for which the null is rejected approximately equal to the true value of 𝜇? Why or why not?
-
-```{r}
-
-```
 
 # Problem 3
 
